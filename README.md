@@ -16,7 +16,7 @@ Run `ngrok http 3000`, copy the first `Forwarding` value (e.g.: https://56156c35
 
 #### /server/index.js
 1. Open your League of Legends client
-2. Find your `lockfile` file (Found in your league client's folder, e.g.: "D:\League Of Legends")
+2. Find your `lockfile` file (Found in your league client's folder, e.g.: "D:\League Of Legends\")
 3. Copy the contents of the lockfile to [this](https://github.com/justinsmid/accept-league-queue/blob/f54a76e13c4bb4ea7d1418485f64b1ce649bd73a/server/index.js#L8) line
 
 ### Run the app
@@ -25,10 +25,11 @@ Run `ngrok http 3000`, copy the first `Forwarding` value (e.g.: https://56156c35
 cd {clone_dir}/server
 npm start
 ```
-Where {clone_dir} should be replaced with the directory you cloned the repository to.
 
 #### App
 ```
 cd {clone_dir}/app
 npm run android
 ```
+
+Where {clone_dir} should be replaced with the directory you cloned the repository to.
