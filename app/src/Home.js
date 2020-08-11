@@ -40,6 +40,16 @@ export default (props, context) => {
 
     return (
         <View>
+            {/* {matchFound ?
+                <View>
+                    <Button title='Accept' color='green' onPress={acceptMatch} />
+                    <Button title='Decline' color='red' onPress={declineMatch} />
+                </View>
+                : <View>
+                    <Button title='Cancel interval' onPress={removeInterval} />
+                    <Button title='Enable interval' onPress={enableInterval} />
+                </View>
+            } */}
             {matchFound ?
                 <View style={styles.buttonContainer}>
                     <Button title='Accept' color='green' style={{margin: '20px'}} onPress={acceptMatch} />
