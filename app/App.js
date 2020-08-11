@@ -1,20 +1,9 @@
+import 'react-native-gesture-handler';
 import React from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
-import Home from './src/Home';
+import Drawer from './src/Drawer';
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Home />
-    </SafeAreaView>
+    <Drawer />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
