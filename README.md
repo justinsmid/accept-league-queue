@@ -6,8 +6,9 @@ App to accept league queues using your phone.
 ### Download and install
 1. Install [node](https://nodejs.org/en/download/) (If not already installed, check if `node --version` works)
 2. Install [expo](https://expo.io/) (Run `npm install -g expo-cli` to install it)
-3. Install [ngrok](https://ngrok.com/download) (If not already installed, check if `ngrok --version` works)
-4. Clone repository (`git clone https://github.com/justinsmid/accept-league-queue.git`)
+3. Install [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) (If not already installed, check if `git --version` works)
+4. Install [ngrok](https://ngrok.com/download) (If not already installed, check if `ngrok --version` works)
+5. Clone repository (`git clone https://github.com/justinsmid/accept-league-queue.git`)
 
 ### Edit (currently) hardcoded things
 
