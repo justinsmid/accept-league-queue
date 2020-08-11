@@ -29,7 +29,7 @@ npm start
 #### App
 ```
 cd {clone_dir}/app
-npm run android
+npm run android (or 'npm run ios' if you are on iOS)
 ```
 
 Where {clone_dir} should be replaced with the directory you cloned the repository to.
