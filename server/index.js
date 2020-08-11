@@ -5,8 +5,9 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 Buffer = Buffer || require('buffer').Buffer;
 
+const LOCKFILE_VALUE = 'LeagueClient:17840:58489:z_3kZYgsM0JtqYsOYvfgHg:https';
 const LCU_username = 'riot';
-const [LCU_process, LCU_PID, LCU_port, LCU_password, LCU_protocol] = 'LeagueClient:17840:58489:z_3kZYgsM0JtqYsOYvfgHg:https'.split(':');
+const [LCU_process, LCU_PID, LCU_port, LCU_password, LCU_protocol] = LOCKFILE_VALUE.split(':');
 
 const app = express();
 const port = 3000;
