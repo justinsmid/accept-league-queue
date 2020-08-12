@@ -1,5 +1,5 @@
 import React from "react";
-import {getGlobal} from "../../util";
+import {getGlobal} from "../../util/util";
 import QRCode from "react-qr-code";
 import './LandingPage.sass';
 import {Link} from "react-router-dom";

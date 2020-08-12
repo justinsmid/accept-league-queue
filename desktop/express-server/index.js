@@ -51,6 +51,7 @@ module.exports.startExpressServer = () => {
 
                 lcuConnector.start();
 
+                // TODO: [later] Mention the timeout in UI
                 setTimeout(() => {
                     reject(`Express server timed out while attempting to read LCU data. Probably because no running League Client was found.`);   
                 }, 10000);
