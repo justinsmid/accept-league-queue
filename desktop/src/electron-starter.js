@@ -14,7 +14,14 @@ let mainWindow;
 
 function onAppReady() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 1024, height: 768, webPreferences: {nodeIntegration: true}});
+    mainWindow = new BrowserWindow({
+        width: 1024,
+        height: 768,
+        webPreferences: {
+            nodeIntegration: true,
+            enableRemoteModule: true
+        }
+    });
 
     // and load the index.html of the app.
     const startUrl = process.env.ELECTRON_START_URL || url.format({
