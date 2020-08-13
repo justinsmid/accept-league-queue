@@ -1,0 +1,56 @@
+{
+  "name": "desktop",
+  "discription": "Desktop app for league client helper",
+  "version": "0.1.0",
+  "author": "Justin Smid",
+  "private": true,
+  "main": "src/entry/electron/electron-starter.js",
+  "homepage": "./",
+  "build": {
+    "appId": "justinsmid.league-helper.desktop"
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "node-localstorage": "^2.1.6",
+    "node-sass": "^4.14.1",
+    "react": "^16.13.1",
+    "react-burger-menu": "^2.7.1",
+    "react-dom": "^16.13.1",
+    "react-qr-code": "^1.0.2",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "3.4.2",
+    "tmi.js": "^1.5.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "dev": "nf start",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "devDependencies": {
+    "electron": "^9.2.0",
+    "foreman": "^3.0.1",
+    "electron-builder": "^22.8.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

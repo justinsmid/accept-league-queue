@@ -1,0 +1,24 @@
+@import "../util/sass-variables";
+
+.app
+    width: 100vw
+    height: 100vh
+    
+.page
+    width: 100%
+    height: calc(100% - #{$navigation-bar-height})
+    color: $app-text-color
+    background-color: $app-background-color
+
+// Remove margin from p-elements
+p
+    margin: 0
+
+// Remove outline from all focussed elements
+*:focus
+    outline: none
+
+// Remove underline and blue color from unvisited links
+a:link
+    color: inherit
+    text-decoration: none
