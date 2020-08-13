@@ -1,9 +1,14 @@
 {
   "name": "desktop",
+  "discription": "Desktop app for league client helper",
   "version": "0.1.0",
+  "author": "Justin Smid",
   "private": true,
   "main": "src/entry/electron/electron-starter.js",
   "homepage": "./",
+  "build": {
+    "appId": "justinsmid.league-helper.desktop"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -24,14 +29,17 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "dev": "nf start"
+    "dev": "nf start",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
   "devDependencies": {
     "electron": "^9.2.0",
-    "foreman": "^3.0.1"
+    "foreman": "^3.0.1",
+    "electron-builder": "^22.8.0"
   },
   "browserslist": {
     "production": [
