@@ -16,12 +16,14 @@ App to accept league queues using your phone or your twitch chat.
 #### Desktop app
 ```console
 cd {clone_dir}/desktop
+npm install
 npm run dev
 ```
 
 #### Mobile app
 ```
 cd {clone_dir}/app
+npm install
 npm run android (or 'npm run ios' if you are on iOS)
 ```
 
