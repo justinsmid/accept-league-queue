@@ -12,21 +12,14 @@ App to accept league queues using your phone.
    - Run `npm install -g foreman` to install it
 5. Clone repository (`git clone https://github.com/justinsmid/accept-league-queue.git`)
 
-### Edit (currently) hardcoded things
-
-#### /app/src/Home.js
-1. Run the server (see [this](https://github.com/justinsmid/accept-league-queue/blob/master/README.md#server))
-   - This should output `Server listening at '{localhost_url}', ngrok running at '{ngrok_url}'`
-2. Copy the ngrok_url from the above output to [this](https://github.com/justinsmid/accept-league-queue/blob/3bcf51d8f431bcd2bb78c7e06931bdf076a7fc15/app/src/Home.js#L4) line
-
 ### Run the app
-#### Server
+#### Desktop app
 ```console
-cd {clone_dir}/server
-npm start
+cd {clone_dir}/desktop
+npm run dev
 ```
 
-#### App
+#### Mobile app
 ```
 cd {clone_dir}/app
 npm run android (or 'npm run ios' if you are on iOS)
