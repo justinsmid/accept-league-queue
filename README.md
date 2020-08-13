@@ -1,5 +1,5 @@
 # Accept league queue
-App to accept league queues using your phone.
+App to accept league queues using your phone or your twitch chat.
 
 ## Steps to make it work
 
