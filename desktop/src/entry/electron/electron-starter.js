@@ -1,18 +1,23 @@
 const electron = require('electron');
-// Module to control application life.
-const app = electron.app;
+const {app, ipcMain} = electron;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
 const path = require('path');
 const url = require('url');
 const {startExpressServer} = require('../../../express-server');
+const {LocalStorage} = require('node-localstorage');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
 function onAppReady() {
+    const twitchAuthStorage = new LocalStorage('./twitch-auth');
+    global.twitchAuthStorage = twitchAuthStorage;
+
+    twitchAuthStorage.removeItem('accessToken'); // TODO: Caching access token doesnt work properly yet. For now just dont persist it.
+
     // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 1024,
@@ -41,6 +46,8 @@ function onAppReady() {
 
     mainWindow.webContents.openDevTools();
 
+    global.mainWindow = mainWindow;
+
     startExpressServer()
         .then(() => {
             console.log(`Express server listening at 'http://localhost:${global.expressServerPort}', ngrok running at '${global.ngrokUrl}'`);
@@ -48,7 +55,15 @@ function onAppReady() {
         .catch(error => {
             console.error(`ERROR: Could not start express server`);
             console.error(error);
-            mainWindow.close();
+
+            if (error.startsWith('[LCU_TIMEOUT]')) {
+                electron.dialog.showErrorBox(
+                    'LCU data reading timed out',
+                    'This is probably because no open League client could be found. Please make sure your League client is running and restart this app.'
+                );
+            } else {
+                mainWindow.close();
+            }
         });
 }
 

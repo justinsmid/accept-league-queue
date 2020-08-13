@@ -8,11 +8,16 @@ Buffer = Buffer || require('buffer').Buffer;
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 const btoa = string => Buffer.from(string).toString('base64');
+const jsonResponse = res => res.json();
 
 let lcuConnector;
 
 const PORT = 6969;
 let server;
+
+const TWITCH_APP_CLIENT_ID = 'vgg3y1iox13ljlp25hogabv408qz0m';
+const TWITCH_APP_CLIENT_SECRET = 'apl0hcj3qpdb5bialb7hq3twhoruol'; // TODO: Hide this.
+const TWITCH_REDIRECT_URL = `http://localhost:${PORT}/twitch/oauth/redirect`;
 
 module.exports.startExpressServer = () => {
     return new Promise((resolve, reject) => {
@@ -31,6 +36,16 @@ module.exports.startExpressServer = () => {
 
             server.post('/request', (req, res) => {
                 handleRequest(req, res, 'POST');
+            });
+
+            server.get('/twitch/oauth/redirect', async (req, res) => {
+                const {code} = req.query;
+
+                const accessToken = await fetchTwitchAccessToken(code);
+
+                global.twitchAuthStorage.setItem('accessToken', JSON.stringify(accessToken));
+                
+                global.mainWindow.webContents.send('gotTwitchAccessToken', accessToken);
             });
 
             server.listen(PORT, async () => {
@@ -52,8 +67,10 @@ module.exports.startExpressServer = () => {
                 lcuConnector.start();
 
                 // TODO: [later] Mention the timeout in UI
+                // TODO: [later] Allow user to customize duration to timeout
+                // TODO: Figure out a nicer way to signal timeout to UI
                 setTimeout(() => {
-                    reject(`Express server timed out while attempting to read LCU data. Probably because no running League Client was found.`);   
+                    reject(`[LCU_TIMEOUT]: Express server timed out while attempting to read LCU data. Probably because no running League Client was found.`);
                 }, 10000);
             });
         } catch (error) {
@@ -86,6 +103,14 @@ const sendRequest = (endpoint, options = {}) => {
     };
 
     return fetch(url, options)
-        .then(res => res.json())
+        .then(jsonResponse)
         .catch(err => console.log(`ERROR: `, err));
+};
+
+const fetchTwitchAccessToken = code => {
+    const url = `https://id.twitch.tv/oauth2/token?client_id=${TWITCH_APP_CLIENT_ID}&client_secret=${TWITCH_APP_CLIENT_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=${TWITCH_REDIRECT_URL}`;
+
+    return fetch(url, {method: 'POST'})
+        .then(jsonResponse)
+        .catch(console.error);
 };
