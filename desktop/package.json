@@ -1,18 +1,32 @@
 {
   "name": "desktop",
-  "discription": "Desktop app for league client helper",
+  "description": "Desktop app for league client helper",
   "version": "0.1.0",
   "author": "Justin Smid",
   "private": true,
-  "main": "src/entry/electron/electron-starter.js",
+  "main": "public/electron.js",
   "homepage": "./",
   "build": {
-    "appId": "justinsmid.league-helper.desktop"
+    "appId": "justinsmid.league-helper.desktop",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "buffer": "^5.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "lcu-connector": "^2.1.3",
+    "localtunnel": "^2.0.0",
+    "ngrok": "^3.2.7",
+    "node-fetch": "^2.6.0",
     "node-localstorage": "^2.1.6",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
@@ -37,9 +51,12 @@
     "extends": "react-app"
   },
   "devDependencies": {
+    "concurrently": "^5.3.0",
     "electron": "^9.2.0",
+    "electron-builder": "^22.8.0",
+    "electron-is-dev": "^1.2.0",
     "foreman": "^3.0.1",
-    "electron-builder": "^22.8.0"
+    "wait-on": "^5.2.0"
   },
   "browserslist": {
     "production": [

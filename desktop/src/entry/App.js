@@ -17,7 +17,7 @@ function App() {
         <LocationListener onChange={onLocationChange} />
         <NavigationBar currentPath={currentPath} />
         <Switch className="switch">
-          <Route exact path="/" render={() => <Redirect to="/landing" />} />
+          <Route exact path="/" render={() => <Redirect to="/twitch" />} />
           {routes.map(route => (
             <Route key={route.title} exact path={route.path} component={route.component} />
           ))}

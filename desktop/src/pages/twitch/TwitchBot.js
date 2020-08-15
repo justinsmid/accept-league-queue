@@ -1,5 +1,5 @@
 import tmi from 'tmi.js';
-import {getGlobal} from '../../util/util';
+import {commands} from './commands';
 
 const BOT_USERNAME = 'LCU_bot';
 const OAUTH_TOKEN = 'oauth:jz3i5tbf9pdbp93pe39uals7qg4si5';
@@ -9,19 +9,6 @@ const opts = {
     identity: {
         username: BOT_USERNAME,
         password: OAUTH_TOKEN
-    }
-};
-
-const commands = {
-    'accept-queue': () => {
-        console.log('[Twitch bot]: Accepting queue...');
-        const url = `${getGlobal('ngrokUrl')}/request?endpoint=/lol-matchmaking/v1/ready-check/accept`;
-        return fetch(url, {method: 'POST', mode: 'no-cors'});
-    },
-    'decline-queue': () => {
-        console.log('[Twitch bot]: Declining queue...');
-        const url = `${getGlobal('ngrokUrl')}/request?endpoint=/lol-matchmaking/v1/ready-check/decline`;
-        return fetch(url, {method: 'POST', mode: 'no-cors'});
     }
 };
 
@@ -65,7 +52,7 @@ export default class TwitchBot {
             return;
         }
 
-        commands[command]();
+        commands[command](msgSegments);
     }
 
     onConnectedHandler(addr, port) {

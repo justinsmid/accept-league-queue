@@ -7,7 +7,6 @@ const express = require('express');
 const fetch = require('node-fetch');
 const LCUConnector = require('lcu-connector');
 const cors = require('cors');
-const localtunnel = require('localtunnel');
 
 Buffer = Buffer || require('buffer').Buffer;
 
@@ -34,8 +33,6 @@ const jsonResponse = res => res.json();
 function onAppReady() {
     const twitchAuthStorage = new LocalStorage('./twitch-auth');
     global.twitchAuthStorage = twitchAuthStorage;
-
-    twitchAuthStorage.removeItem('accessToken'); // TODO: Caching access token doesnt work properly yet. For now just dont persist it.
 
     // Create the browser window.
     mainWindow = new BrowserWindow({
@@ -133,42 +130,25 @@ class ExpressServer {
                 });
 
                 server.post('/request', (req, res) => {
-                    this.handleRequest({req, res, method: 'POST'});
+                    this.handleRequest({req, res, method: 'POST', options: {body: JSON.stringify(req.body), headers: {'Content-Type': 'application/json'}}});
+                });
+
+                server.put('/request', (req, res) => {
+                    this.handleRequest({req, res, method: 'PUT', options: {body: JSON.stringify(req.body), headers: {'Content-Type': 'application/json'}}});
                 });
 
                 server.patch('/request', (req, res) => {
-                    const body = JSON.stringify(req.body);
-                    this.handleRequest({req, res, method: 'PATCH', options: {body, headers: {'Content-Type': 'application/json'}}});
+                    this.handleRequest({req, res, method: 'PATCH', options: {body: JSON.stringify(req.body), headers: {'Content-Type': 'application/json'}}});
                 });
-
-                server.get('/pick-champ', (req, res) => {
-                    console.log('---/pick-champ request received');
-
-                    const endpoint = `/lol-champ-select/v1/session/actions/1`;
-
-                    const {protocol, address, port} = global.LCU_data;
-                    const url = `${protocol}://${address}:${port}${endpoint}`;
-
-                    options = {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'authorization': 'Basic cmlvdDpRcUxxRWxLcmxzbG9MeHJ3VlJxUElB'
-                        },
-                        body: `{"actorCellId": 0,"championId": 266,"completed": false,"id": 1,"isAllyAction": true,"type": "string"}`
-                    };
-
-                    return fetch(url, options)
-                        .then(console.log)
-                        .catch(err => console.log(`ERROR: `, err));
-                })
 
                 server.get('/twitch/oauth/redirect', async (req, res) => {
                     const {code} = req.query;
 
-                    const accessToken = await this.fetchTwitchAccessToken(code);
-
-                    global.twitchAuthStorage.setItem('accessToken', JSON.stringify(accessToken));
+                    let accessToken = await this.fetchTwitchAccessToken(code);
+                    accessToken = {
+                        ...accessToken,
+                        expiresAt: Date.now() + (accessToken.expires_in * 1000)
+                    };
 
                     global.mainWindow.webContents.send('gotTwitchAccessToken', accessToken);
                 });
@@ -210,16 +190,12 @@ class ExpressServer {
 
         const response = await this.sendRequest(endpoint, {method: method, ...options});
 
-        console.log(`Response for endpoint '${endpoint}': `, response);
-
         res.json(response);
     };
 
     sendRequest(endpoint, options) {
         const {protocol, address, port} = global.LCU_data;
         const url = `${protocol}://${address}:${port}${endpoint}`;
-
-        console.log('body: ', options.body);
 
         options = {
             ...options,

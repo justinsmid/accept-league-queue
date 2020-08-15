@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {getGlobal} from '../../util/util';
+import {getGlobal, jsonResponse} from '../../util/util';
 import TwitchBot from './TwitchBot';
 import './TwitchPage.sass';
 const electron = window.require('electron');
@@ -7,6 +7,7 @@ const BrowserWindow = electron.remote.BrowserWindow;
 const ipcRenderer = electron.ipcRenderer;
 
 const TWITCH_APP_CLIENT_ID = 'vgg3y1iox13ljlp25hogabv408qz0m';
+const TWITCH_APP_CLIENT_SECRET = 'apl0hcj3qpdb5bialb7hq3twhoruol'; // TODO: Hide this.
 const TWITCH_REDIRECT_URL = 'http://localhost:6969/twitch/oauth/redirect';
 const TWITCH_RESPONSE_TYPE = 'code';
 const TWITCH_OAUTH_SCOPE = 'channel:read:subscriptions';
@@ -15,7 +16,6 @@ let authWindow;
 
 /**
  * TODO:
- * Handle access token expiring
  * Probably should have some more error checking in the access token stuff
  */
 export default class TwitchPage extends Component {
@@ -29,36 +29,46 @@ export default class TwitchPage extends Component {
         };
 
         this.twitchBot = new TwitchBot();
+        this.debugTwitchBot = new TwitchBot();
 
         this.startAuthentication = this.startAuthentication.bind(this);
         this.updateTwitchUserFromToken = this.updateTwitchUserFromToken.bind(this);
         this.disconnectTwitchBot = this.disconnectTwitchBot.bind(this);
         this.connectTwitchBot = this.connectTwitchBot.bind(this)
         this.unauthenticateTwitch = this.unauthenticateTwitch.bind(this);
+        this.updateAccessTokenCache = this.updateAccessTokenCache.bind(this);
+        this.refreshAccessToken = this.refreshAccessToken.bind(this);
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         const accessTokenStr = getGlobal('twitchAuthStorage').getItem('accessToken');
         if (accessTokenStr) {
-            const accessToken = JSON.parse(accessTokenStr);
+            let accessToken = JSON.parse(accessTokenStr);
+
+            accessToken = await this.updateAccessTokenCache(accessToken);
 
             this.updateTwitchUserFromToken(accessToken);
 
             this.setState({accessToken});
         }
+
+        this.debugTwitchBot.disconnect();
+        this.debugTwitchBot.connect('darkpolearm123');
     }
 
     updateTwitchUserFromToken(accessToken) {
+        console.log(`Updating twitch user from token`, accessToken);
         fetch(`https://api.twitch.tv/helix/users/`, {
             headers: {
                 'Client-ID': TWITCH_APP_CLIENT_ID,
                 'Authorization': `Bearer ${accessToken.access_token}`
             }
         })
-            .then(res => res.json())
+            .then(jsonResponse)
             .then(async res => {
                 const twitchUserData = res.data[0];
 
+                // TODO: [later] Allow user to configure whether the bot auto-connects
                 await this.disconnectTwitchBot();
                 await this.connectTwitchBot(twitchUserData.display_name);
 
@@ -83,11 +93,38 @@ export default class TwitchPage extends Component {
             authWindow = null;
         });
 
-        ipcRenderer.on('gotTwitchAccessToken', (event, accessToken) => {
+        ipcRenderer.on('gotTwitchAccessToken', async (event, accessToken) => {
             authWindow.close();
+
+            accessToken = await this.updateAccessTokenCache(accessToken);
 
             this.updateTwitchUserFromToken(accessToken);
         });
+    }
+
+    async updateAccessTokenCache(accessToken) {
+        const storage = getGlobal('twitchAuthStorage');
+
+        const expiresIn = Math.ceil((accessToken.expiresAt - Math.ceil(Date.now())) / 1000);
+        if (expiresIn <= 60) {
+            accessToken = await this.refreshAccessToken(accessToken);
+            accessToken = {
+                ...accessToken,
+                expiresAt: Date.now() + (accessToken.expires_in * 1000)
+            };
+        }
+
+        storage.setItem('accessToken', JSON.stringify(accessToken));
+        return accessToken;
+    }
+
+    refreshAccessToken(accessToken) {
+        const url = `https://id.twitch.tv/oauth2/token?grant_type=refresh_token&refresh_token=${accessToken.refresh_token}&client_id=${TWITCH_APP_CLIENT_ID}&client_secret=${TWITCH_APP_CLIENT_SECRET}`;
+        return fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(accessToken)
+        })
+            .then(jsonResponse);
     }
 
     async disconnectTwitchBot() {
@@ -106,12 +143,12 @@ export default class TwitchPage extends Component {
     }
 
     unauthenticateTwitch() {
-        this.twitchBot.disconnect();
+        this.disconnectTwitchBot();
+        getGlobal('twitchAuthStorage').removeItem('accessToken');
         this.setState({
             accessToken: null,
             twitchUserData: null
         });
-        // TODO: Remove accessToken from cache
     }
 
     render() {
