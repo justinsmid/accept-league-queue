@@ -78,7 +78,7 @@ export default class TwitchBot {
         }
     }
 
-    async attemptToExecuteCommand(commandName, msgSenderData, args) {
+    async attemptToExecuteCommand(commandName, msgSenderData, args, ircChannel) {
         const {commands} = this.pageRef.state;
 
         if (!(commandName in commands)) {
@@ -89,7 +89,7 @@ export default class TwitchBot {
         const command = commands[commandName];
 
         if (command.enabled === false) {
-            // TODO: Send message to user in twitch chat
+            this.client.say(ircChannel, `@${msgSenderData['display-name']}, the command '${commandName}' is disabled.`);
             console.log(`[Twitch bot]: Command '${commandName}' was called, but this command is disabled. Command not executed.`);
             return false;
         }
@@ -99,9 +99,9 @@ export default class TwitchBot {
         if (userCanExecuteCommand) {
             console.log(`[Twitch bot]: Executing command '${commandName}'`, command);
 
-            return command.execute(args, this);
+            return command.execute(args, this, msgSenderData, ircChannel);
         } else {
-            // TODO: Send message to user in twitch chat
+            this.client.say(ircChannel, `@${msgSenderData['display-name']}, the command '${commandName}' is only usable by ${command.requiredRole}.`);
             console.log(`[Twitch bot]: user '${msgSenderData['display-name']}' sent command '${commandName}' but does not have sufficient permissions. Command not executed.`);
             return false;
         }
@@ -122,7 +122,7 @@ export default class TwitchBot {
 
         msgSegments = msgSegments.splice(1); // Remove command from message
 
-        this.attemptToExecuteCommand(command, msgSenderData, msgSegments);
+        this.attemptToExecuteCommand(command, msgSenderData, msgSegments, target);
     }
 
     onConnectedHandler(addr, port) {

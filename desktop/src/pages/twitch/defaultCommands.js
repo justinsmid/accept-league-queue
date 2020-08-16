@@ -80,7 +80,7 @@ export const defaultCommands = {
         format: '!lcu trust <username>',
         simpleCommand: true,
         requiredRole: RequiredRole.TRUSTED,
-        execute: (args, twitchBot) => {
+        execute: (args, twitchBot, msgSenderData, ircChannel) => {
             const username = args[0];
 
             if (!twitchBot.pageRef.state.trustedUsers.some(trustedUser => equalsIgnoreCase(trustedUser, username))) {
@@ -88,7 +88,7 @@ export const defaultCommands = {
 
                 return twitchBot.pageRef.addTrustedUser(username);
             } else {
-                // TODO: Send message in twitch chat
+                twitchBot.client.say(ircChannel, `@${msgSenderData['display-name']}, the user '${username}' is already trusted.`);
                 console.log(`[Twitch bot]: user '${username}' is already trusted.`);
             }
         }

@@ -32,6 +32,7 @@ const jsonResponse = res => res.json();
 
 const LOCAL_STORAGE_PREFIX = './localStorage/';
 
+// TODO: Remove /express-server folder
 function onAppReady() {
     const twitchAuthStorage = new LocalStorage(LOCAL_STORAGE_PREFIX + 'twitch-auth');
     const commandsStorage = new LocalStorage(LOCAL_STORAGE_PREFIX + 'commands');
