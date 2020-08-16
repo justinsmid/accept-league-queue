@@ -31,10 +31,7 @@ export const fetchTwitchApi = (url, options) => {
     });
 };
 
-/**
- * TODO:
- * Probably should have some more error checking in the access token stuff
- */
+// TODO: Probably should have some more error checking in the access token stuff
 export default class TwitchPage extends Component {
     constructor(props, context) {
         super(props, context);
