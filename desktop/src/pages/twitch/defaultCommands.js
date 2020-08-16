@@ -16,6 +16,7 @@ export const stringifyCommands = commands => {
 export const parseStringifiedCommands = commandsStr => {
     if (!commandsStr) return null;
 
+    // eslint-disable-next-line
     return JSON.parse(commandsStr, (key, val) => key === 'execute' ? eval(val) : val);
 }
 
@@ -57,7 +58,6 @@ export const defaultCommands = {
         description: 'Makes the bot console.log \'pong\'. Can be used to check whether the bot is correctly connected to chat.',
         argumentData: null,
         format: '!lcu ping',
-        simpleCommand: true,
         requiredRole: RequiredRole.ANYONE,
         execute: () => {
             console.log('[Twitch bot]: Pong');
@@ -78,8 +78,7 @@ export const defaultCommands = {
             ]
         },
         format: '!lcu trust <username>',
-        simpleCommand: true,
-        requiredRole: RequiredRole.TRUSTED,
+        requiredRole: RequiredRole.TRUSTED_PLUS,
         execute: (args, twitchBot, msgSenderData, ircChannel) => {
             const username = args[0];
 
@@ -99,8 +98,7 @@ export const defaultCommands = {
         description: 'Accepts the League queue if there is one that can currently be accepted.',
         argumentData: null,
         format: '!lcu accept-queue',
-        simpleCommand: true,
-        requiredRole: RequiredRole.MODS,
+        requiredRole: RequiredRole.MODS_PLUS,
         execute: () => {
             console.log('[Twitch bot]: Accepting queue...');
             const url = `${getGlobal('serverUrl')}/request?endpoint=/lol-matchmaking/v1/ready-check/accept`;
@@ -113,8 +111,7 @@ export const defaultCommands = {
         description: 'Declines the League queue if there is one that can currently be declined.',
         argumentData: null,
         format: '!lcu decline-queue',
-        simpleCommand: true,
-        requiredRole: RequiredRole.MODS,
+        requiredRole: RequiredRole.MODS_PLUS,
         execute: () => {
             console.log('[Twitch bot]: Declining queue...');
             const url = `${getGlobal('serverUrl')}/request?endpoint=/lol-matchmaking/v1/ready-check/decline`;
@@ -136,8 +133,7 @@ export const defaultCommands = {
             ]
         },
         format: '!lcu hover-champ <champion>',
-        simpleCommand: false,
-        requiredRole: RequiredRole.TRUSTED,
+        requiredRole: RequiredRole.SUBSCRIBERS_PLUS,
         execute: args => pickChamp(args, false)
     },
     'lock-champ': {
@@ -155,8 +151,7 @@ export const defaultCommands = {
             ]
         },
         format: '!lcu lock-champ <champion>',
-        simpleCommand: false,
-        requiredRole: RequiredRole.TRUSTED,
+        requiredRole: RequiredRole.TRUSTED_PLUS,
         execute: args => pickChamp(args, true)
     },
     'request': {
@@ -196,8 +191,7 @@ export const defaultCommands = {
             ]
         },
         format: '!lcu request endpoint=<endpoint> method=<method> returnsJson=<returnsJson> body=<body> headers=<headers>',
-        simpleCommand: false,
-        requiredRole: RequiredRole.TRUSTED,
+        requiredRole: RequiredRole.TRUSTED_PLUS,
         execute: args => {
             console.log('[Twitch bot]: handing request with args', args);
 
@@ -263,6 +257,7 @@ const getChampionId = async ({arg, summonerId}) => {
     }
 };
 
+// TODO: handle multiple champs that include given name, champion not being available
 const pickChamp = async (args, lockIn = false) => {
     console.clear();
     console.log('[Twitch bot]: Picking champion...');
@@ -298,7 +293,7 @@ const pickChamp = async (args, lockIn = false) => {
 
     const actions = champSelectSession.actions;
 
-    console.log('champ select session', champSelectSession, champSelectSession.actions);
+    console.log('champ select session', champSelectSession, actions);
 
     const meInSession = champSelectSession.myTeam.find(summoner => summoner.summonerId === mySummonerId);
     console.log('me in sesion', meInSession);
@@ -306,7 +301,7 @@ const pickChamp = async (args, lockIn = false) => {
     const myCellId = meInSession.cellId;
     console.log('My cell id', myCellId);
 
-    const myAction = champSelectSession.actions.find(actions => (actions.find(action =>
+    const myAction = actions.find(actions => (actions.find(action =>
         action.isAllyAction && action.type === "pick" && action.actorCellId === myCellId
     )))[0];
     console.log('my action', myAction);

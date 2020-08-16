@@ -345,13 +345,13 @@ export default class TwitchPage extends Component {
                         );
 
                         return (
-                            <div className="table-row">
+                            <div key={twitchCommand} className="table-row">
                                 <Checkbox checked={command.enabled} onChange={toggleCommandEnabled} size='small' />
                                 <div>{command.name}</div>
                                 <div>{'!' + twitchCommand}</div>
-                                <select className="role-selector" name="required-role" onChange={setRequiredRole}>
+                                <select className="role-selector" value={command.requiredRole} name="required-role" onChange={setRequiredRole}>
                                     {Object.values(RequiredRole).map(role => (
-                                        <option value={role} selected={command.requiredRole === role}>{role}</option>
+                                        <option key={role} value={role}>{role}</option>
                                     ))}
                                 </select>
                                 <ModalButton buttonTitle='View'>
@@ -412,7 +412,7 @@ export default class TwitchPage extends Component {
                         ));
 
                         return (
-                            <div className="table-row">
+                            <div key={user} className="table-row">
                                 <p>{user}</p>
                                 <div className="flex center">
                                     <Tooltip title={canBeRemoved ? '' : 'Cannot remove this user'}>
