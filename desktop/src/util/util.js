@@ -8,6 +8,12 @@ export const includesIgnoreCase = (target, string) => {
     return string.toLowerCase().includes(target.toLowerCase());
 };
 
+export const equalsIgnoreCase = (target, string) => {
+    if (typeof target !== "string" || typeof string !== "string") return false;
+
+    return string.toLowerCase() === target.toLowerCase();
+};
+
 export const splitFirst = (string, separator) => {
     if (!string || !separator) return null;
 

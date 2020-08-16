@@ -1,6 +1,118 @@
+@import "../../util/sass-variables";
+$table-cell-width: 100px
+
 .page
     padding: 10px
     
 .authenticated-actions
     button
         margin: 5px
+
+.flex
+    display: flex
+
+.center
+    justify-content: center
+    align-items: center
+    text-align: center
+
+.add
+    cursor: pointer
+    display: flex
+    font-size: 12px
+    align-items: center
+
+.table
+    position: relative
+    width: fit-content
+    max-height: 300px
+    overflow-y: auto
+    margin: 10px
+    border: 1px solid $navigation-bar-color
+
+    .header
+        padding: 5px
+        display: flex
+        justify-content: space-between
+
+        h3
+            margin: 0
+
+    .bold
+        font-weight: bold
+
+    .table-row
+        display: flex
+
+        > *
+            width: $table-cell-width
+            height: auto
+            margin: 0
+            padding: 5px 0
+            text-align: center
+            border: 1px solid $navigation-bar-color
+            border-radius: 0
+            word-break: break-word
+        
+        .role-selector
+            width: $table-cell-width + 2px
+            background-color: $app-background-color
+            color: $app-text-color
+            cursor: pointer
+
+.MuiPaper-root
+    border-radius: 0 !important
+
+.modal
+    position: relative
+    width: 600px
+    min-height: 300px
+    max-height: 600px
+    overflow-x: hidden
+    overflow-y: auto
+    background-color: $app-background-color
+    color: $app-text-color
+
+    .header
+        margin: 0
+        padding: 10px
+        border-bottom: 3px solid black
+    
+    .content
+        padding: 10px
+
+        input
+            min-width: 300px
+    
+    .footer
+        position: absolute
+        bottom: 10px
+        width: 100%
+
+        .actions
+            display: flex
+            justify-content: flex-end
+
+            > *
+                cursor: pointer
+                margin-right: 10px
+    
+    $section-background-color: darken($app-background-color, 5)
+    $section-font-size: 14px
+
+    .section
+        margin-bottom: 5px
+        padding: 5px
+        background-color: $section-background-color
+        font-size: $section-font-size
+
+        .section-header
+            font-weight: bold
+            font-size: $section-font-size + 2px
+
+        .section
+            margin-top: 5px
+            background-color: darken($section-background-color, 5)
+
+            .section-header
+                font-size: $section-font-size

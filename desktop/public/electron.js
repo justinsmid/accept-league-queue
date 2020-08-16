@@ -31,8 +31,14 @@ const btoa = string => Buffer.from(string).toString('base64');
 const jsonResponse = res => res.json();
 
 function onAppReady() {
+    // TODO: Store localStorage files in a ./localStorage folder
     const twitchAuthStorage = new LocalStorage('./twitch-auth');
+    const commandsStorage = new LocalStorage('./commands');
+    const trustedStorage = new LocalStorage('./trusted');
+    
     global.twitchAuthStorage = twitchAuthStorage;
+    global.commandsStorage = commandsStorage;
+    global.trustedStorage= trustedStorage;
 
     // Create the browser window.
     mainWindow = new BrowserWindow({

@@ -25,3 +25,5 @@ yarn-error.log*
 
 # Local cache
 /twitch-auth
+/commands
+/trusted
