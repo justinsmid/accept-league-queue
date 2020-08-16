@@ -14,12 +14,6 @@ const path = require('path');
 const url = require('url');
 const {LocalStorage} = require('node-localstorage');
 
-const isDev = require('electron-is-dev');
-
-const {autoUpdater} = require('electron-updater');
-autoUpdater.autoDownload = false;
-// require('update-electron-app')();
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -76,35 +70,6 @@ function onAppReady() {
     mainWindow.webContents.openDevTools();
 
     global.mainWindow = mainWindow;
-
-    if (!isDev) {
-        console.log('Not in dev mode, setting update interval');
-        setInterval(() => {
-            console.log('Update interval triggered...');
-            autoUpdater.checkForUpdates();
-    
-            autoUpdater.on('checking-for-updates', () => {
-                console.log('Checking for updates...');
-            });
-
-            autoUpdater.on('update-available', () => {
-                console.log('Update available...');
-            });
-
-            autoUpdater.on('update-not-available', () => {
-                console.log('No update available...');
-            });
-
-            autoUpdater.on('error', error => {
-                console.error('ERROR: encountered error while updating');
-                console.error(error);
-            });
-
-            autoUpdater.on('update-downloaded', releaseName => {
-                console.log(`Update '${releaseName}' downloaded!`);
-            })
-        }, 10000);
-    }
 
     const expressServer = new ExpressServer(EXPRESS_PORT);
     expressServer.start()

@@ -1,7 +1,7 @@
 {
   "name": "desktop",
   "description": "Desktop app for league client helper",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "author": "Justin Smid",
   "private": true,
   "main": "public/electron.js",
@@ -24,8 +24,6 @@
     "@material-ui/core": "^4.11.0",
     "buffer": "^5.6.0",
     "cors": "^2.8.5",
-    "electron-is-dev": "^1.2.0",
-    "electron-updater": "^4.3.4",
     "express": "^4.17.1",
     "lcu-connector": "^2.1.3",
     "node-fetch": "^2.6.0",
@@ -36,8 +34,7 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.2",
-    "tmi.js": "^1.5.0",
-    "update-electron-app": "^1.5.0"
+    "tmi.js": "^1.5.0"
   },
   "scripts": {
     "start": "react-scripts start",
