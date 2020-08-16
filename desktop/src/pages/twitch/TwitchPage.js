@@ -225,7 +225,7 @@ export default class TwitchPage extends Component {
 
         const twitchAuthenticated = !!twitchUserData;
 
-        {/* TODO: [later] allow creating custom commands */}
+        // TODO: [later] allow creating custom commands
         const closeCustomCommandModal = () => this.setState({showAddCustomCommandModal: false});
         const openCustomCommandModal = () => this.setState({showAddCustomCommandModal: true});
         const AddCustomCommandModal = () => {
