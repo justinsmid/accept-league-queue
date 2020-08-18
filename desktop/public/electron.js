@@ -67,7 +67,7 @@ function onAppReady() {
         mainWindow = null
     });
 
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     global.mainWindow = mainWindow;
 

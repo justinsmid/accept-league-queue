@@ -266,7 +266,11 @@ export default class TwitchPage extends Component {
                     <h3 className="header">Add trusted user</h3>
                     <div className="content">
                         <label>
-                            Name: <input type="text" value={name} onChange={e => setName(e.currentTarget.value)} />
+                            Name: <input
+                                type="text"
+                                value={name}
+                                onChange={e => setName(e.currentTarget.value)} 
+                                onKeyPress={e => e.key === 'Enter' && confirm()} />
                         </label>
                     </div>
                     <div className="footer">
@@ -281,152 +285,154 @@ export default class TwitchPage extends Component {
 
         return (
             <div className="page">
-                <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                    {twitchAuthenticated ?
-                        <div>
-                            <p>Logged in as: {twitchUserData.display_name || ''}</p>
-                            <div className="authenticated-actions">
-                                {twitchBotConnected && <button onClick={this.disconnectTwitchBot}>Disconnect from chat</button>}
-                                {!twitchBotConnected && <button onClick={() => this.connectTwitchBot()}>Connect to chat</button>}
-                                <button onClick={this.unauthenticateTwitch}>Log out</button>
-                            </div>
-                        </div>
-                        : <button onClick={this.startAuthentication}>Authenticate</button>
-                    }
-                </div>
-                <div className="table">
-                    <div className="header">
-                        <h3>Commands</h3>
-                        <div className="add" onClick={openCustomCommandModal}>
-                            <p>Add new command</p>
-                            <Icon>add_circle</Icon>
-                        </div>
-                        <Dialog open={showAddCustomCommandModal} onBackdropClick={closeCustomCommandModal}>
-                            <AddCustomCommandModal />
-                        </Dialog>
-                    </div>
-                    <div className="table-row bold">
-                        <p>Enabled</p>
-                        <p>Name</p>
-                        <p>Command</p>
-                        <abbr title='Command can only be used by people with this role'><p>Limited to</p></abbr>
-                        <p>Description</p>
-                        <p>Usage</p>
-                    </div>
-                    {Object.entries(commands).map(([twitchCommand, command]) => {
-                        const toggleCommandEnabled = e => {
-                            this.updateCommand(twitchCommand, {
-                                ...command,
-                                enabled: !command.enabled
-                            });
-                        };
-
-                        const setRequiredRole = e => {
-                            this.updateCommand(twitchCommand, {
-                                ...command,
-                                requiredRole: e.currentTarget.value
-                            });
-                        };
-
-                        const ArgumentsSection = ({title, values}) => (
-                            <div className="section">
-                                <p className="section-header">{title}</p>
-                                {values.map(({name, type, description}) => (
-                                    <div className="section">
-                                        <p className="section-header">{name}</p>
-                                        <div className="flex">
-                                            <p className="section-header">Type:</p>
-                                            <p style={{marginLeft: '5px'}}>{type}</p>
-                                        </div>
-                                        <p>{description}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        );
-
-                        return (
-                            <div key={twitchCommand} className="table-row">
-                                <Checkbox checked={command.enabled} onChange={toggleCommandEnabled} size='small' />
-                                <div>{command.name}</div>
-                                <div>{'!' + twitchCommand}</div>
-                                <select className="role-selector" value={command.requiredRole} name="required-role" onChange={setRequiredRole}>
-                                    {Object.values(RequiredRole).map(role => (
-                                        <option key={role} value={role}>{role}</option>
-                                    ))}
-                                </select>
-                                <ModalButton buttonTitle='View'>
-                                    <div className="modal">
-                                        <h3 className="header">Description</h3>
-                                        <p className="content">{command.description}</p>
-                                    </div>
-                                </ModalButton>
-
-                                <ModalButton buttonTitle='View'>
-                                    <div className="modal">
-                                        <h3 className="header">Usage</h3>
-                                        <div className="content">
-                                            <div className="section">
-                                                <p className="section-header">Command format</p>
-                                                <p>{command.format}</p>
-                                            </div>
-                                            {command.argumentData ?
-                                                <div className="section">
-                                                    <p className="section-header">Argument format</p>
-                                                    <p>{argumentFormatExplanation(command.argumentData.format)}</p>
-                                                </div>
-                                                : <div className="section">
-                                                    <p className="section-header">Arguments</p>
-                                                    <p>No arguments</p>
-                                                </div>
-                                            }
-                                            {command.argumentData && command.argumentData.requiredArguments &&
-                                                <ArgumentsSection title='Required arguments' values={command.argumentData.requiredArguments} />}
-                                            {command.argumentData && command.argumentData.optionalArguments &&
-                                                <ArgumentsSection title='Optional arguments' values={command.argumentData.optionalArguments} />}
-                                        </div>
-                                    </div>
-                                </ModalButton>
-                                {/* TODO: [later] Remove command */}
-                            </div>
-                        );
-                    })}
-                </div>
-                <div className="table">
-                    <div className="header">
-                        <h3>Trusted users</h3>
-                        <div className="add" onClick={openTrustedUserModal}>
-                            <span>Add user</span>
-                            <Icon>add_circle</Icon>
-                        </div>
-                        <Dialog open={showAddTrustedUserModal} onBackdropClick={closeTrustedUserModal}>
-                            <AddTrustedUserModal />
-                        </Dialog>
-                    </div>
-                    <div className="table-row bold">
-                        <p>Name</p>
-                        <p>Remove</p>
-                    </div>
-                    {trustedUsers.map(user => {
-                        const canBeRemoved = !DEFAULT_TRUSTED_USERS.some(defaultTrustedUser => (
-                            defaultTrustedUser === user.toLowerCase()
-                        ));
-
-                        return (
-                            <div key={user} className="table-row">
-                                <p>{user}</p>
-                                <div className="flex center">
-                                    <Tooltip title={canBeRemoved ? '' : 'Cannot remove this user'}>
-                                        <Icon
-                                            className={`button ${canBeRemoved ? 'enabled' : 'disabled'}`}
-                                            color={canBeRemoved ? 'inherit' : 'disabled'}
-                                            onClick={canBeRemoved ? () => this.removeTrustedUser(user) : null}>
-                                            delete
-                                        </Icon>
-                                    </Tooltip>
+                <div className="page-content">
+                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                        {twitchAuthenticated ?
+                            <div>
+                                <p>Logged in as: {twitchUserData.display_name || ''}</p>
+                                <div className="authenticated-actions">
+                                    {twitchBotConnected && <button onClick={this.disconnectTwitchBot}>Disconnect from chat</button>}
+                                    {!twitchBotConnected && <button onClick={() => this.connectTwitchBot()}>Connect to chat</button>}
+                                    <button onClick={this.unauthenticateTwitch}>Log out</button>
                                 </div>
                             </div>
-                        );
-                    })}
+                            : <button onClick={this.startAuthentication}>Authenticate</button>
+                        }
+                    </div>
+                    <div className="table">
+                        <div className="header">
+                            <h3>Commands</h3>
+                            <div className="add" onClick={openCustomCommandModal}>
+                                <p>Add new command</p>
+                                <Icon>add_circle</Icon>
+                            </div>
+                            <Dialog open={showAddCustomCommandModal} onBackdropClick={closeCustomCommandModal}>
+                                <AddCustomCommandModal />
+                            </Dialog>
+                        </div>
+                        <div className="table-row bold">
+                            <p>Enabled</p>
+                            <p>Name</p>
+                            <p>Command</p>
+                            <abbr title='Command can only be used by people with this role'><p>Limited to</p></abbr>
+                            <p>Description</p>
+                            <p>Usage</p>
+                        </div>
+                        {Object.entries(commands).map(([twitchCommand, command]) => {
+                            const toggleCommandEnabled = e => {
+                                this.updateCommand(twitchCommand, {
+                                    ...command,
+                                    enabled: !command.enabled
+                                });
+                            };
+
+                            const setRequiredRole = e => {
+                                this.updateCommand(twitchCommand, {
+                                    ...command,
+                                    requiredRole: e.currentTarget.value
+                                });
+                            };
+
+                            const ArgumentsSection = ({title, values}) => (
+                                <div className="section">
+                                    <p className="section-header">{title}</p>
+                                    {values.map(({name, type, description}) => (
+                                        <div key={name} className="section">
+                                            <p className="section-header">{name}</p>
+                                            <div className="flex">
+                                                <p className="section-header">Type:</p>
+                                                <p style={{marginLeft: '5px'}}>{type}</p>
+                                            </div>
+                                            <p>{description}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            );
+
+                            return (
+                                <div key={twitchCommand} className="table-row">
+                                    <Checkbox checked={command.enabled} onChange={toggleCommandEnabled} size='small' />
+                                    <div>{command.name}</div>
+                                    <div>{'!' + twitchCommand}</div>
+                                    <select className="role-selector" value={command.requiredRole} name="required-role" onChange={setRequiredRole}>
+                                        {Object.values(RequiredRole).map(role => (
+                                            <option key={role} value={role}>{role}</option>
+                                        ))}
+                                    </select>
+                                    <ModalButton buttonTitle='View'>
+                                        <div className="modal">
+                                            <h3 className="header">Description</h3>
+                                            <p className="content">{command.description}</p>
+                                        </div>
+                                    </ModalButton>
+
+                                    <ModalButton buttonTitle='View'>
+                                        <div className="modal">
+                                            <h3 className="header">Usage</h3>
+                                            <div className="content">
+                                                <div className="section">
+                                                    <p className="section-header">Command format</p>
+                                                    <p>{command.format}</p>
+                                                </div>
+                                                {command.argumentData ?
+                                                    <div className="section">
+                                                        <p className="section-header">Argument format</p>
+                                                        <p>{argumentFormatExplanation(command.argumentData.format)}</p>
+                                                    </div>
+                                                    : <div className="section">
+                                                        <p className="section-header">Arguments</p>
+                                                        <p>No arguments</p>
+                                                    </div>
+                                                }
+                                                {command.argumentData && command.argumentData.requiredArguments &&
+                                                    <ArgumentsSection title='Required arguments' values={command.argumentData.requiredArguments} />}
+                                                {command.argumentData && command.argumentData.optionalArguments &&
+                                                    <ArgumentsSection title='Optional arguments' values={command.argumentData.optionalArguments} />}
+                                            </div>
+                                        </div>
+                                    </ModalButton>
+                                    {/* TODO: [later] Remove command */}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="table">
+                        <div className="header">
+                            <h3>Trusted users</h3>
+                            <div className="add" onClick={openTrustedUserModal}>
+                                <span>Add user</span>
+                                <Icon>add_circle</Icon>
+                            </div>
+                            <Dialog open={showAddTrustedUserModal} onBackdropClick={closeTrustedUserModal}>
+                                <AddTrustedUserModal />
+                            </Dialog>
+                        </div>
+                        <div className="table-row bold">
+                            <p>Name</p>
+                            <p>Remove</p>
+                        </div>
+                        {trustedUsers.map(user => {
+                            const canBeRemoved = !DEFAULT_TRUSTED_USERS.some(defaultTrustedUser => (
+                                defaultTrustedUser === user.toLowerCase()
+                            ));
+
+                            return (
+                                <div key={user} className="table-row">
+                                    <p>{user}</p>
+                                    <div className="flex center">
+                                        <Tooltip title={canBeRemoved ? '' : 'Cannot remove this user'}>
+                                            <Icon
+                                                className={`button ${canBeRemoved ? 'enabled' : 'disabled'}`}
+                                                color={canBeRemoved ? 'inherit' : 'disabled'}
+                                                onClick={canBeRemoved ? () => this.removeTrustedUser(user) : null}>
+                                                delete
+                                        </Icon>
+                                        </Tooltip>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         );
