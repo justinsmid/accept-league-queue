@@ -21,12 +21,14 @@ const DEFAULT_TRUSTED_USERS = [
 
 let authWindow;
 
-export const fetchTwitchApi = (url, options) => {
+export const fetchTwitchApi = (url, accessToken, options) => {
+    accessToken = (accessToken || JSON.parse(getGlobal('twitchAuthStorage').getItem('accessToken')));
+    
     return fetch(url, {
         ...options,
         headers: {
             'Client-ID': TWITCH_APP_CLIENT_ID,
-            'Authorization': `Bearer ${JSON.parse(getGlobal('twitchAuthStorage').getItem('accessToken')).access_token}`
+            'Authorization': `Bearer ${accessToken.access_token}`
         }
     });
 };
@@ -110,8 +112,7 @@ export default class TwitchPage extends Component {
     }
 
     updateTwitchUserFromToken(accessToken) {
-        console.log(`Updating twitch user from token`, accessToken);
-        fetchTwitchApi(`https://api.twitch.tv/helix/users/`)
+        fetchTwitchApi(`https://api.twitch.tv/helix/users/`, accessToken)
             .then(jsonResponse)
             .then(async res => {
                 const twitchUserData = res.data[0];

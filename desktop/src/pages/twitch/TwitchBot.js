@@ -82,6 +82,7 @@ export default class TwitchBot {
         const {commands} = this.pageRef.state;
 
         if (!(commandName in commands)) {
+            this.client.say(ircChannel, `@${msgSenderData['display-name']}, the command '${commandName}' is unknown.`);
             console.error(`[Twitch bot]: Command '${commandName}' unknown.`);
             return false;
         }
@@ -108,8 +109,6 @@ export default class TwitchBot {
     }
 
     onMessageHandler(target, msgSenderData, msg, self) {
-        console.log(msgSenderData);
-        console.log(this.pageRef);
         if (self) return; // Ignore messages from the bot
 
         let msgSegments = msg.split(' ');

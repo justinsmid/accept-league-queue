@@ -2,7 +2,8 @@ import TwitchPage from "./pages/twitch/TwitchPage";
 
 export default [
     {
-        path: '/twitch',
+        path: ['/', '/twitch'],
+        linkPath: '/twitch',
         title: 'Twitch integration',
         component: TwitchPage
     }

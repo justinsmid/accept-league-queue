@@ -19,7 +19,7 @@ export const parseStringifiedCommands = commandsStr => {
 
     // eslint-disable-next-line
     // return JSON.parse(commandsStr, (key, val) => key === 'execute' ? eval(val) : val);
-    
+
     const commands = JSON.parse(commandsStr);
 
     // TODO: Store commands[execute]. This is a workaround and only works for default commands.
@@ -61,7 +61,7 @@ export const argumentFormatExplanation = format => {
             return `Named - Arguments should be prefixed with '<name>=' and can be given in any order. ${ending}`;
         default: throw new Error(`Argument format '${format}' not explained`);
     }
-}
+};
 
 // TODO: Perform checks for command args more properly, and for all commands that take args
 export const defaultCommands = {
@@ -93,10 +93,17 @@ export const defaultCommands = {
         format: '!lcu trust <username>',
         requiredRole: RequiredRole.TRUSTED_PLUS,
         execute: (args, twitchBot, msgSenderData, ircChannel) => {
+            if (args.length === 0) {
+                console.error(`Argument 'username' not provided for command 'trust'`);
+                twitchBot.client.say(ircChannel, `@${msgSenderData['display-name']}, please provide a username for command 'trust'`);
+                return;
+            }
+
             const username = args[0];
 
             if (!twitchBot.pageRef.state.trustedUsers.some(trustedUser => equalsIgnoreCase(trustedUser, username))) {
                 console.log(`[Twitch bot]: Trusting user '${username}'...`);
+                twitchBot.client.say(ircChannel, `@${msgSenderData['display-name']}, '${username}' is now trusted.`);
 
                 return twitchBot.pageRef.addTrustedUser(username);
             } else {
@@ -112,10 +119,24 @@ export const defaultCommands = {
         argumentData: null,
         format: '!lcu accept-queue',
         requiredRole: RequiredRole.MODS_PLUS,
-        execute: () => {
+        execute: (args, twitchBot, msgSenderData, ircChannel) => {
             console.log('[Twitch bot]: Accepting queue...');
             const url = `${getGlobal('serverUrl')}/request?endpoint=/lol-matchmaking/v1/ready-check/accept`;
-            return fetch(url, {method: 'POST'});
+            return fetch(url, {method: 'POST'})
+                .then(res => {
+                    switch (res.status) {
+                        case 404:
+                            console.error('Attempted to accept queue, but no active queue was found.');
+                            twitchBot.client.say(ircChannel, `@${msgSenderData['display-name']}, no active queue found to accept.`);
+                            return res;
+                        case 500:
+                            console.error('Attempted to accept queue, but the current queue has not popped yet.');
+                            twitchBot.client.say(ircChannel, `@${msgSenderData['display-name']}, the current queue has not popped yet.`);
+                            return res;
+                        case 200:
+                        default: return res;
+                    }
+                });
         }
     },
     'decline-queue': {
@@ -125,10 +146,24 @@ export const defaultCommands = {
         argumentData: null,
         format: '!lcu decline-queue',
         requiredRole: RequiredRole.MODS_PLUS,
-        execute: () => {
+        execute: (args, twitchBot, msgSenderData, ircChannel) => {
             console.log('[Twitch bot]: Declining queue...');
             const url = `${getGlobal('serverUrl')}/request?endpoint=/lol-matchmaking/v1/ready-check/decline`;
-            return fetch(url, {method: 'POST'});
+            return fetch(url, {method: 'POST'})
+                .then(res => {
+                    switch (res.status) {
+                        case 404:
+                            console.error('Attempted to decline queue, but no active queue was found.');
+                            twitchBot.client.say(ircChannel, `@${msgSenderData['display-name']}, no active queue found to decline.`);
+                            return res.json();
+                        case 500:
+                            console.error('Attempted to decline queue, but the current queue has not popped yet.');
+                            twitchBot.client.say(ircChannel, `@${msgSenderData['display-name']}, the current queue has not popped yet.`);
+                            return res.json();
+                        case 200:
+                        default: return res;
+                    }
+                });
         }
     },
     'hover-champ': {
@@ -147,7 +182,7 @@ export const defaultCommands = {
         },
         format: '!lcu hover-champ <champion>',
         requiredRole: RequiredRole.SUBSCRIBERS_PLUS,
-        execute: args => pickChamp(args, false)
+        execute: (args, twitchBot, msgSenderData, ircChannel) => pickChamp(args, false, 'hover-champ', twitchBot, msgSenderData, ircChannel)
     },
     'lock-champ': {
         name: 'Lock in champion',
@@ -165,7 +200,7 @@ export const defaultCommands = {
         },
         format: '!lcu lock-champ <champion>',
         requiredRole: RequiredRole.TRUSTED_PLUS,
-        execute: args => pickChamp(args, true)
+        execute: (args, twitchBot, msgSenderData, ircChannel) => pickChamp(args, true, 'lock-champ', twitchBot, msgSenderData, ircChannel)
     },
     'request': {
         name: 'Send custom request',
@@ -271,12 +306,13 @@ const getChampionId = async ({arg, summonerId}) => {
 };
 
 // TODO: handle multiple champs that include given name, champion not being available
-const pickChamp = async (args, lockIn = false) => {
+const pickChamp = async (args, lockIn = false, command, twitchBot, msgSenderData, ircChannel) => {
     console.clear();
     console.log('[Twitch bot]: Picking champion...');
 
-    if (args.length === 0 || args.length > 1) {
-        console.error(`1 argument expected for pickChamp: championId or championName but instead got ${args.length}`, args);
+    if (args.length === 0) {
+        console.error(`Argument 'champion' not provided for command '${command}'`);
+        twitchBot.client.say(ircChannel, `@${msgSenderData['display-name']}, please provide a champion for command '${command}'`);
         return;
     }
 
@@ -287,13 +323,16 @@ const pickChamp = async (args, lockIn = false) => {
     const championId = await getChampionId({arg: args[0], summonerId: mySummonerId});
     if (!championId) {
         console.error(`Could not find a champion matching ${args[0]}`);
+        twitchBot.client.say(ircChannel, `@${msgSenderData['display-name']}, could not find a champion matching '${args[0]}'`);
         return;
     }
     console.log('Got championId', championId);
 
     const champSelectSession = await fetch(`${getGlobal('serverUrl')}/request?endpoint=/lol-champ-select/v1/session`)
         .then(async res => {
+            console.log('champ select session res before .json()', res);
             res = await res.json();
+            console.log('champ select session res after .json()', res);
             console.log(res, res.httpStatus === 404);
             const returnValue = res.httpStatus === 404 ? null : res;
             console.log('returnValue', returnValue);
@@ -301,6 +340,7 @@ const pickChamp = async (args, lockIn = false) => {
         });
     if (!champSelectSession) {
         console.error(`No active champion select found`);
+        twitchBot.client.say(ircChannel, `@${msgSenderData['display-name']}, no active champion select found.`);
         return;
     }
 

@@ -17,7 +17,7 @@ export default ({currentPath}) => {
                         <Link
                             key={route.title}
                             id={route.title}
-                            to={route.path}
+                            to={route.linkPath}
                             onClick={toggleShowMenu}
                             className={`menu-item ${matchesCurrentPath ? 'current' : ''}`}
                         >

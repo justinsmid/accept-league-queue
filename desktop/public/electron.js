@@ -67,7 +67,7 @@ function onAppReady() {
         mainWindow = null
     });
 
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     global.mainWindow = mainWindow;
 
@@ -196,8 +196,9 @@ class ExpressServer {
         console.log(`Handling [${method}] request for endpoint '${endpoint}'...`);
 
         const response = await this.sendRequest(endpoint, {method: method, ...options});
+        const status = (response && response.httpStatus) || 200;
 
-        res.json(response);
+        res.status(status).send(response);
     };
 
     sendRequest(endpoint, options) {
