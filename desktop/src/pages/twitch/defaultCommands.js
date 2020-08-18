@@ -10,15 +10,28 @@ const findAndParseArg = (target, args) => {
 export const stringifyCommands = commands => {
     if (!commands) return null;
 
-    return JSON.stringify(commands, (key, val) => typeof val === 'function' ? val.toString() : val);
+    // return JSON.stringify(commands, (key, val) => typeof val === 'function' ? val.toString() : val);
+    return JSON.stringify(commands);
 };
 
 export const parseStringifiedCommands = commandsStr => {
     if (!commandsStr) return null;
 
     // eslint-disable-next-line
-    return JSON.parse(commandsStr, (key, val) => key === 'execute' ? eval(val) : val);
-}
+    // return JSON.parse(commandsStr, (key, val) => key === 'execute' ? eval(val) : val);
+    
+    const commands = JSON.parse(commandsStr);
+
+    // TODO: Store commands[execute]. This is a workaround and only works for default commands.
+    Object.entries(commands).forEach(([key, command]) => {
+        commands[key] = {
+            ...command,
+            execute: defaultCommands[key].execute
+        };
+    });
+
+    return commands;
+};
 
 // TODO: Custom - custom list of viewers
 export const RequiredRole = Object.freeze({
