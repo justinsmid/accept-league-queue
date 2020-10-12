@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import './App.sass';
-import {BrowserRouter as Router, Switch, Route, Redirect, useLocation} from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route, useLocation} from 'react-router-dom';
 import routes from '../routes';
 import NavigationBar from '../components/navBar/NavigationBar';
 
@@ -17,7 +17,6 @@ function App() {
         <LocationListener onChange={onLocationChange} />
         <NavigationBar currentPath={currentPath} />
         <Switch className="switch">
-          <Route exact path="/" render={() => <Redirect to="/landing" />} />
           {routes.map(route => (
             <Route key={route.title} exact path={route.path} component={route.component} />
           ))}

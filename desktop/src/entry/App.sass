@@ -1,14 +1,19 @@
 @import "../util/sass-variables";
 
 .app
+    position: relative
     width: 100vw
+    min-width: $app-min-width
     height: 100vh
-    
-.page
-    width: 100%
-    height: calc(100% - #{$navigation-bar-height})
+    background-color: $app-background-color
     color: $app-text-color
     background-color: $app-background-color
+
+.button.enabled
+    cursor: pointer
+
+.button.disabled
+    cursor: default
 
 // Remove margin from p-elements
 p
