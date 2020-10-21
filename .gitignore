@@ -25,3 +25,5 @@ web-build/
 # visual studio code config
 .vscode
 
+# Local storage
+localStorage/
