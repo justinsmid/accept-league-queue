@@ -27,3 +27,5 @@ web-build/
 
 # Local storage
 localStorage/
+
+dist/
