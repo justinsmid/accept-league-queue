@@ -10,15 +10,11 @@ const findAndParseArg = (target, args) => {
 export const stringifyCommands = commands => {
     if (!commands) return null;
 
-    // return JSON.stringify(commands, (key, val) => typeof val === 'function' ? val.toString() : val);
     return JSON.stringify(commands);
 };
 
 export const parseStringifiedCommands = commandsStr => {
     if (!commandsStr) return null;
-
-    // eslint-disable-next-line
-    // return JSON.parse(commandsStr, (key, val) => key === 'execute' ? eval(val) : val);
 
     const commands = JSON.parse(commandsStr);
 
