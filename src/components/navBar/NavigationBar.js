@@ -5,8 +5,8 @@ import routes from '../../routes';
 import './menu.sass';
 
 export default ({currentPath}) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const toggleShowMenu = () => setShowMenu(!showMenu);
+    const [showMenu, setShowMenu] = useState(false);
+    const toggleShowMenu = () => setShowMenu(!showMenu);
 
     return (
         <div className="menu">

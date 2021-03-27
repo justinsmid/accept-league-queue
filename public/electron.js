@@ -1,5 +1,6 @@
 const electron = require('electron');
 const {app} = electron;
+const {autoUpdater} = require("electron-updater");
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
@@ -33,6 +34,11 @@ const jsonResponse = res => res.json();
 const LOCAL_STORAGE_PREFIX = './localStorage/';
 
 function onAppReady() {
+    console.log('App ready!')
+    // Check for app updates
+    autoUpdater.checkForUpdates();
+
+    // Set up localstorage
     const twitchAuthStorage = new LocalStorage(LOCAL_STORAGE_PREFIX + 'twitch-auth');
     const commandsStorage = new LocalStorage(LOCAL_STORAGE_PREFIX + 'commands');
     const trustedStorage = new LocalStorage(LOCAL_STORAGE_PREFIX + 'trusted');
@@ -111,6 +117,19 @@ app.on('activate', function () {
     if (mainWindow === null) {
         onAppReady()
     }
+});
+
+const onAutoUpdateEvent = (event, data) => {
+    mainWindow.webContents.on('did-finish-load', () => {
+        mainWindow.webContents.send('AUTO_UPDATER_EVENT', event, data);
+    });
+};
+
+autoUpdater.on('update-downloaded', (info) => {
+    onAutoUpdateEvent('update-downloaded', info);
+    setTimeout(() => {
+        autoUpdater.quitAndInstall();
+    }, 5000);
 });
 
 class ExpressServer {

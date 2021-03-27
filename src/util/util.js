@@ -1,3 +1,5 @@
+import React, {useEffect} from "react";
+
 const electron = window.require('electron');
 
 export const getGlobal = electron.remote.getGlobal;
@@ -19,6 +21,10 @@ export const splitFirst = (string, separator) => {
 
     const parts = string.split(separator);
     return [parts.shift(),  parts.join(separator)];
+};
+
+export const useEffectOnce = (callback) => {
+    return useEffect(callback, []);
 };
 
 export const jsonResponse = res => res.json();
