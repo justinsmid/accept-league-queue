@@ -27,3 +27,17 @@ To run the application from source, undergo the following steps:
    - `npm install`
 8. Run the application
    - `npm run dev`
+
+## For developers
+
+### Publishing a release
+To publish a new release, undergo the following steps:
+
+1. `npm install`
+2. `npm run build`
+3. `npm run dist`
+4. archive all files created in the /dist folder to a zip
+5. Go to https://github.com/justinsmid/accept-league-queue/releases/new
+6. Write release information
+7. Upload the .zip archive, as well as the `latest.yml` inside of the zip, and the .exe installer. (Make sure the .exe installer's name matches the `path` in `latest.yml`)
+8. Publish the release!
