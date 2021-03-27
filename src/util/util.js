@@ -22,3 +22,5 @@ export const splitFirst = (string, separator) => {
 };
 
 export const jsonResponse = res => res.json();
+
+export const VERSION = "0.2.0";

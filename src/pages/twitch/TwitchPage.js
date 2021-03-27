@@ -23,7 +23,7 @@ let authWindow;
 
 export const fetchTwitchApi = (url, accessToken, options) => {
     accessToken = (accessToken || JSON.parse(getGlobal('twitchAuthStorage').getItem('accessToken')));
-    
+
     return fetch(url, {
         ...options,
         headers: {
@@ -49,6 +49,10 @@ export default class TwitchPage extends Component {
         };
 
         this.twitchBot = new TwitchBot();
+
+        ipcRenderer.on('AUTO_UPDATER_EVENT', (event, x, y) => {
+            console.log(`Received AUTO_UPDATER_EVENT`, event, x, y);
+        });
 
         this.startAuthentication = this.startAuthentication.bind(this);
         this.updateTwitchUserFromToken = this.updateTwitchUserFromToken.bind(this);
@@ -270,7 +274,7 @@ export default class TwitchPage extends Component {
                             Name: <input
                                 type="text"
                                 value={name}
-                                onChange={e => setName(e.currentTarget.value)} 
+                                onChange={e => setName(e.currentTarget.value)}
                                 onKeyPress={e => e.key === 'Enter' && confirm()} />
                         </label>
                     </div>
