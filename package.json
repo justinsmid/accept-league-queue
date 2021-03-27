@@ -1,7 +1,7 @@
 {
   "name": "desktop",
   "description": "Desktop app for league client helper",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "Justin Smid",
   "private": true,
   "main": "public/electron.js",
