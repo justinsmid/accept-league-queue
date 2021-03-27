@@ -1,5 +1,5 @@
 const electron = require('electron');
-const {app, webContents} = electron;
+const {app} = electron;
 const {autoUpdater} = require("electron-updater");
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
@@ -120,35 +120,16 @@ app.on('activate', function () {
 });
 
 const onAutoUpdateEvent = (event, data) => {
-    console.log(`[AUTO_UPDATE_EVENT]: ${event}`, data);
-    setTimeout(() => {
+    mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContents.send('AUTO_UPDATER_EVENT', event, data);
-    }, 10000);
+    });
 };
 
-autoUpdater.on('checking-for-update', () => {
-    onAutoUpdateEvent('[AUTO_UPDATE_EVENT]: checking-for-update');
-});
-
-autoUpdater.on('update-available', (info) => {
-    onAutoUpdateEvent('[AUTO_UPDATE_EVENT]: update-available', info);
-});
-
-autoUpdater.on('update-not-available', (info) => {
-    onAutoUpdateEvent('[AUTO_UPDATE_EVENT]: update-not-available', info);
-});
-
-autoUpdater.on('error', (err) => {
-    onAutoUpdateEvent('[AUTO_UPDATE_EVENT]: error', err);
-});
-
-autoUpdater.on('download-progress', (progressObj) => {
-    onAutoUpdateEvent('[AUTO_UPDATE_EVENT]: download-progress', progressObj);
-});
-
 autoUpdater.on('update-downloaded', (info) => {
-    onAutoUpdateEvent('[AUTO_UPDATE_EVENT]: update-downloaded', info);
-    autoUpdater.quitAndInstall();
+    onAutoUpdateEvent('update-downloaded', info);
+    setTimeout(() => {
+        autoUpdater.quitAndInstall();
+    }, 5000);
 });
 
 class ExpressServer {

@@ -50,10 +50,6 @@ export default class TwitchPage extends Component {
 
         this.twitchBot = new TwitchBot();
 
-        ipcRenderer.on('AUTO_UPDATER_EVENT', (event, x, y) => {
-            console.log(`Received AUTO_UPDATER_EVENT`, event, x, y);
-        });
-
         this.startAuthentication = this.startAuthentication.bind(this);
         this.updateTwitchUserFromToken = this.updateTwitchUserFromToken.bind(this);
         this.disconnectTwitchBot = this.disconnectTwitchBot.bind(this);

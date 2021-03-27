@@ -3,6 +3,10 @@ import './App.sass';
 import {BrowserRouter as Router, Switch, Route, useLocation} from 'react-router-dom';
 import routes from '../routes';
 import NavigationBar from '../components/navBar/NavigationBar';
+import {useEffectOnce} from '../util/util';
+const electron = window.require('electron');
+const ipcRenderer = electron.ipcRenderer;
+const {dialog} = electron.remote;
 
 function App() {
   const [currentPath, setCurrentPath] = useState('/');
@@ -10,6 +14,19 @@ function App() {
   const onLocationChange = location => {
     setCurrentPath(location.pathname);
   };
+
+  useEffectOnce(() => {
+    ipcRenderer.on('AUTO_UPDATER_EVENT', (event) => {
+      if (event === 'update-downloaded') {
+        dialog.showMessageBox(
+          {
+            title: 'New version downloaded',
+            message: 'A new version of the application has been detected and will be installed shortly.'
+          }
+        );
+      }
+    });
+  });
 
   return (
     <div className="app">
