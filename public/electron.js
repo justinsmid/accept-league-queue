@@ -24,7 +24,7 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 const EXPRESS_PORT = 6969;
 
 const TWITCH_APP_CLIENT_ID = 'vgg3y1iox13ljlp25hogabv408qz0m';
-const TWITCH_APP_CLIENT_SECRET = 'apl0hcj3qpdb5bialb7hq3twhoruol'; // TODO: Hide this.
+const TWITCH_APP_CLIENT_SECRET = 'apl0hcj3qpdb5bialb7hq3twhoruol';
 const TWITCH_REDIRECT_URL = `http://localhost:${EXPRESS_PORT}/twitch/oauth/redirect`;
 
 const btoa = string => Buffer.from(string).toString('base64');
