@@ -6,9 +6,11 @@ Desktop application used to interact with the League of Legends client through e
 ### Official releases
 To download and install official releases, visit [GitHub releases](https://github.com/justinsmid/accept-league-queue/releases) (Latest release [here](https://github.com/justinsmid/accept-league-queue/releases/tag/v0.2)).
 
-From these pages, you can download the '`vX.Y.<name>.app.zip`' file, unpack it, and run '`<name> Setup X.Y.Z.exe`'. (Where X, Y and Z refer to version numbers, and `<name>` to the name of the application at that time)
+From these pages, you can download the '`vX.Y.Z<name>.app.zip`' file, unpack it, and run '`<name> Setup X.Y.Z.exe`'. (Where X, Y and Z refer to version numbers, and `<name>` to the name of the application)
 
-**Note**: To make local storage work properly, you may have to close the app and run the '`<name>.exe`' file that was installed after you ran '`<name> Setup X.Y.Z.exe`' instead.
+Running this Setup `.exe`-file will install the application to the start bar accessible through the Windows-key, and to `C:\Users\<user>\AppData\Local\Programs\<name>\`, where `<user>` is your Windows account's name, and `<name>` is the name of the application.
+
+To ensure everything works properly, please run the application from here, and not from the Setup `.exe`-file that installed it.
 
 ### From source
 To run the application from source, undergo the following steps:
